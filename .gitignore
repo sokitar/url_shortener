@@ -1,0 +1,4 @@
+*.db
+.vscode
+__pycache__
+url_shortener
