@@ -48,8 +48,51 @@ uvicorn shortener_app.main:app
 
 Following the previous sections instructions, will deploy the app on [**http://127.0.0.1:8000/**](http://127.0.0.1:8000/). To explore the automatically generated documentation for the endpoints, as well as testing the functionality (except the redirection feature), go to [**http://127.0.0.1:8000/docs**](http://127.0.0.1:8000/docs).
 
-# 3. Test
+# 3. URL Shortener Usage - API specification
+## 3.1. Shortening endpoint
+A new short URL can be created by POSTing a URL to the `/shorten` endpoint as follows:
+```
+POST /shorten
+Content-Type: application/json
+{"url": " https://some.long.url.test/foo/bar"}
+```
+  
+If successful, this endpoint should return a response that point to the newly created short URL as follows:
+```
+201 Created
+Location: /urls/<shortcode>
+```
 
+Or, when the same URL was already shortened before, point to the existing location.
+
+```
+303 See Other
+Location: /urls/<shortcode>
+```
+
+## 3.2. Shortened URL endpoint
+In turn, the shortened URLs themselves redirect to their original locations:
+```
+GET /urls/<shortcode>
+307 Temporary Redirect
+Location: https://some.long.url.test/foo/bar
+```
+## 3.3. Statistics endpoint
+To see how often the shortened URL has been used we call:
+```
+GET /urls/<shortcode>/stats
+```
+should respond with:
+```
+200 OK
+Content-Type: application/json
+{
+"hits": 132,
+"url": "https://some.long.url.test/foo/bar",
+"created_on": "2022-03-01T15:43:00Z"
+}
+```
+## 4. Test
 To test the app with the pytest app, you have to activate the environment created in **1.2**, go to the _shortener_app_ directory and run
 
 ```bash
